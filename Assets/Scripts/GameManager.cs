@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour {
 	void Start () {
 		spawnAgents ();
 		winnerTitle.canvasRenderer.SetAlpha (0);
+		newGame.canvasRenderer.SetAlpha (0);
 	}
 	
 	// Update is called once per frame
@@ -43,7 +44,7 @@ public class GameManager : MonoBehaviour {
 
 			if (showNewGame) {
 				if (Input.anyKey) {
-					startNewGame ();
+					restart ();
 				}
 			} else {
 				blinkTime++;
@@ -85,10 +86,12 @@ public class GameManager : MonoBehaviour {
 		winnerTitle.text = winner + " Wins!";
 	}
 
-	private void startNewGame() {
+	private void restart() {
 		GameObject[] agents = GameObject.FindGameObjectsWithTag ("Agent");
 		foreach(GameObject obj in agents) {
 			Destroy(obj);
 		}
+		player1.placeInScreen ();
+		spawnAgents ();
 	}
 }

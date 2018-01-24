@@ -19,4 +19,8 @@ public class Sounds : MonoBehaviour {
 	public void stabbed() {
 		sounds [0].Play ();
 	}
+
+	public void missedStabbed() {
+		sounds [1].Play ();
+	}
 }

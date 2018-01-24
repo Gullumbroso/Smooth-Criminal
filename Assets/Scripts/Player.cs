@@ -8,6 +8,7 @@ public class Player : MonoBehaviour {
 	private string PLAYER2_TAG = "Player2";
 
 	public GameManager manager;
+	private Sounds sounds;
 	public PlayerAnimation playerAnimation;
 	private float velUnit;
 	private float stabbingRadius;
@@ -16,6 +17,7 @@ public class Player : MonoBehaviour {
 
 	void Start () {
 		manager = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+		sounds = GameObject.Find ("Sounds").GetComponent<Sounds> ();
 		playerAnimation = GetComponent<PlayerAnimation> ();
 		velUnit = manager.velUnit;
 		stabbingRadius = manager.stabbingRadius;
@@ -42,7 +44,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public void placeInScreen() {
-		transform.position = new Vector3 (Random.Range (-7, 7), Random.Range (-7, 7), Random.Range (-7, 7));
+		transform.position = new Vector3 (Random.Range (-7, 7), Random.Range (-7, 1), 0);
 	}
 
 	private void getInput() {
@@ -104,6 +106,8 @@ public class Player : MonoBehaviour {
 
 	void stab() {
 
+		sounds.missedStabbed ();
+
 		Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, stabbingRadius);
 
 		foreach (Collider2D collider in colliders)
@@ -131,7 +135,7 @@ public class Player : MonoBehaviour {
 				var agentScript = agent.GetComponent<Agent> ();
 				if (agentScript == null) {
 					Debug.Log ("agentScript is null! Agent type: " + agent.GetType());
-					return;
+					continue;
 				} else {
 					cooldown = true;
 					agentScript.murdered ();
