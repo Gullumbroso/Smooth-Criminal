@@ -8,20 +8,41 @@ public class Player : MonoBehaviour {
 	private string PLAYER2_TAG = "Player2";
 
 	public GameManager manager;
+	public PlayerAnimation playerAnimation;
 	private float velUnit;
 	private float stabbingRadius;
+	private float cooldownTimer;
+	private bool cooldown = false;
 
 	void Start () {
 		manager = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+		playerAnimation = GetComponent<PlayerAnimation> ();
 		velUnit = manager.velUnit;
 		stabbingRadius = manager.stabbingRadius;
-		transform.position = new Vector3 (Random.Range (-4, 4), Random.Range (-4, 4), Random.Range (-4, 4));
-
+		cooldownTimer = manager.postMurderCooldown;
+		placeInScreen ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		getInput ();
+
+		if (manager.playing) {
+
+			getInput ();
+
+			if (cooldown) {
+				cooldownTimer -= Time.deltaTime;
+				if (cooldownTimer <= 0) {
+					// reload the stabbing ability
+					cooldown = false;
+					cooldownTimer = manager.postMurderCooldown;
+				}
+			}
+		}
+	}
+
+	public void placeInScreen() {
+		transform.position = new Vector3 (Random.Range (-7, 7), Random.Range (-7, 7), Random.Range (-7, 7));
 	}
 
 	private void getInput() {
@@ -30,77 +51,91 @@ public class Player : MonoBehaviour {
 		if (gameObject.tag == PLAYER1_TAG) {
 			
 			if (Input.GetKey (KeyCode.UpArrow)) {
-				pos = new Vector3(transform.position.x, transform.position.y + velUnit, 0);
-			}
-
-			if (Input.GetKey(KeyCode.DownArrow)) {
-				pos = new Vector3(transform.position.x, transform.position.y - velUnit, 0);
-			}
-
-			if (Input.GetKey (KeyCode.RightArrow)) {
-				pos = new Vector3(transform.position.x + velUnit, transform.position.y, 0);
-			}
-
-			if (Input.GetKey(KeyCode.LeftArrow)) {
-				pos = new Vector3(transform.position.x - velUnit, transform.position.y, 0);
+				pos = new Vector3 (transform.position.x, transform.position.y + velUnit, 0);
+				playerAnimation.moveUp ();
+			} else if (Input.GetKey (KeyCode.DownArrow)) {
+				pos = new Vector3 (transform.position.x, transform.position.y - velUnit, 0);
+				playerAnimation.moveDown ();
+			} else if (Input.GetKey (KeyCode.RightArrow)) {
+				pos = new Vector3 (transform.position.x + velUnit, transform.position.y, 0);
+				playerAnimation.moveRight ();
+			} else if (Input.GetKey (KeyCode.LeftArrow)) {
+				pos = new Vector3 (transform.position.x - velUnit, transform.position.y, 0);
+				playerAnimation.moveLeft ();
+			} else {
+				playerAnimation.stand ();
 			}
 
 			if (Input.GetKey(KeyCode.L)) {
-				stab();
+				if (!cooldown) {
+					stab();
+				}
 			}
-
+				
 		} else if (gameObject.tag == PLAYER2_TAG) {
 
 			if (Input.GetKey (KeyCode.W)) {
-				pos = new Vector3(transform.position.x, transform.position.y + velUnit, 0);
-			}
-
-			if (Input.GetKey(KeyCode.S)) {
-				pos = new Vector3(transform.position.x, transform.position.y - velUnit, 0);
-			}
-
-			if (Input.GetKey (KeyCode.D)) {
-				pos = new Vector3(transform.position.x + velUnit, transform.position.y, 0);
-			}
-
-			if (Input.GetKey(KeyCode.A)) {
-				pos = new Vector3(transform.position.x - velUnit, transform.position.y, 0);
+				pos = new Vector3 (transform.position.x, transform.position.y + velUnit, 0);
+				playerAnimation.moveUp();
+			} else if (Input.GetKey (KeyCode.S)) {
+				pos = new Vector3 (transform.position.x, transform.position.y - velUnit, 0);
+				playerAnimation.moveDown();
+			} else if (Input.GetKey (KeyCode.D)) {
+				pos = new Vector3 (transform.position.x + velUnit, transform.position.y, 0);
+				playerAnimation.moveRight();
+			} else if (Input.GetKey (KeyCode.A)) {
+				pos = new Vector3 (transform.position.x - velUnit, transform.position.y, 0);
+				playerAnimation.moveLeft();
+			} else {
+				playerAnimation.stand();
 			}
 
 			if (Input.GetKey(KeyCode.Q)) {
-				stab();
+				if (cooldown) {
+					Debug.Log ("Can't stab yet!");
+				} else {
+					stab();
+				}
 			}
 		}
 
-		transform.position = pos;
+		transform.position = manager.depthSim(pos);
 	}
 
 	void stab() {
-		Debug.Log ("Stab!");
-		Debug.Log (stabbingRadius);
 
-		Collider2D collider = Physics2D.OverlapCircle(transform.position, stabbingRadius);
-		int i = 0;
-		if (collider != null)
+		Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, stabbingRadius);
+
+		foreach (Collider2D collider in colliders)
 		{
 			var agent = collider.gameObject;
-			Debug.Log (agent.name);
-			if (tag == PLAYER1_TAG && agent.name == "Player2") {
-				Debug.Log ("Player 1 WINS!");
-				Time.timeScale = 0;
+
+			if (agent.name == PLAYER1_TAG) {
+				continue;
+			
+			} else if (tag == PLAYER1_TAG && agent.name == "Player2") {
+				print ("Player 1 WINS!");
+				var playerAnimationScript = agent.GetComponent<PlayerAnimation>();
+				playerAnimationScript.murdered ();
+				manager.endGame ("Player 1");
 				return;
+			
 			} else if (tag == PLAYER2_TAG && agent.name == "Player1") {
-				Debug.Log ("Player 2 WINS!");
-				Time.timeScale = 0;
+				print ("Player 2 WINS!");
+				var playerAnimationScript = agent.GetComponent<PlayerAnimation>();
+				playerAnimationScript.murdered ();
+				manager.endGame ("Player 2");
 				return;
+			
 			} else {
-				if (tag == PLAYER1_TAG) {
-					Debug.Log ("Player 1 Lose!");
+				var agentScript = agent.GetComponent<Agent> ();
+				if (agentScript == null) {
+					Debug.Log ("agentScript is null! Agent type: " + agent.GetType());
+					return;
 				} else {
-					Debug.Log ("Player 2 Lose!");
+					cooldown = true;
+					agentScript.murdered ();
 				}
-				Time.timeScale = 0;
-				return;
 			}
 		}
 	}

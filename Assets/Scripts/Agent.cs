@@ -21,33 +21,42 @@ public class Agent : MonoBehaviour {
 	private int[] noStand = new int[] {1,2,3,4};
 
 	GameManager manager;
+	Sounds sounds;
+	PlayerAnimation playerAnimation;
 	float velUnit;
 
+	private bool alive = true;
 	private float moveTimer = 0;
 	private int currentMove = 0;
 
 	// Use this for initialization
 	void Start () {
 		manager = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+		sounds = GameObject.Find ("Sounds").GetComponent<Sounds> ();
+		playerAnimation = GetComponent<PlayerAnimation> ();
 		velUnit = manager.velUnit;
 	}
 
 	// Update is called once per frame
 	void Update () {
 
-		makeMove();
+		if (alive && manager.playing) {
 
-		moveTimer -= Time.deltaTime;
+			makeMove();
 
-		if (moveTimer <= 0) {
+			moveTimer -= Time.deltaTime;
 
-			// Make a decision what to do
-			float duration = Random.Range(MIN_MOVE_DURATION, MAX_MOVE_DURATION);
-			int move = getNextMove (currentMove);
+			if (moveTimer <= 0) {
 
-			// Update the movement values
-			moveTimer = duration;
-			currentMove = move;
+				// Make a decision what to do
+				float duration = Random.Range(MIN_MOVE_DURATION, MAX_MOVE_DURATION);
+				int move = getNextMove (currentMove);
+
+				// Update the movement values
+				moveTimer = duration;
+				currentMove = move;
+			}
+
 		}
 	}
 
@@ -58,22 +67,26 @@ public class Agent : MonoBehaviour {
 		switch (currentMove) {
 		case 1:
 			pos = new Vector3 (transform.position.x, transform.position.y + velUnit, 0);
+			playerAnimation.moveUp();
 			break;
 		case 2:
-			pos = new Vector3 (transform.position.x + velUnit, transform.position.y, 0);;
+			pos = new Vector3 (transform.position.x + velUnit, transform.position.y, 0);
+			playerAnimation.moveRight();
 			break;
 		case 3:
-			pos = new Vector3 (transform.position.x, transform.position.y - velUnit, 0);;
+			pos = new Vector3 (transform.position.x, transform.position.y - velUnit, 0);
+			playerAnimation.moveDown ();
 			break;
 		case 4:
-			pos = new Vector3 (transform.position.x - velUnit, transform.position.y, 0);;
+			pos = new Vector3 (transform.position.x - velUnit, transform.position.y, 0);
+			playerAnimation.moveLeft ();
 			break;
 		default:
-			// Stand still
+			playerAnimation.stand ();
 			break;
 		}
 
-		transform.position = pos;
+		transform.position = manager.depthSim(pos);
 	}
 
 	int getNextMove(int exclude) {
@@ -109,5 +122,13 @@ public class Agent : MonoBehaviour {
 		if (lotto > 30) {
 			moveTimer = 0;
 		}
+	}
+
+	public void murdered() {
+		alive = false;
+		sounds.stabbed ();
+		playerAnimation.murdered ();
+		var collider = GetComponent<CircleCollider2D> ();
+		Destroy (collider);
 	}
 }
