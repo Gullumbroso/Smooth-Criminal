@@ -17,10 +17,15 @@ public class GameManager : MonoBehaviour {
 	[SerializeField]
 	public int postMurderCooldown = 15;
 
+	[SerializeField]
+	public bool debugMode;
+
 	public GameObject[] prefabs;
 
 	public Player player1;
 	public Player player2;
+
+	public GameObject[] markers;
 
 	public bool playing = true;
 
@@ -62,6 +67,14 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 
+		if (debugMode) {
+			markers [0].GetComponent<SpriteRenderer> ().sortingOrder = -1;
+			markers [1].GetComponent<SpriteRenderer> ().sortingOrder = -2;
+		} else {
+			foreach (GameObject marker in markers) {
+				marker.GetComponent<SpriteRenderer> ().sortingOrder = -10;
+			} 
+		}
 	}
 
 	void spawnAgents() {
