@@ -16,6 +16,24 @@ public class Player : MonoBehaviour {
 	private float velUnit;
 	private float cooldownTimer;
 	private bool cooldown = false;
+	private float dancingTimer;
+	private bool dancing = false;
+	private bool dancingOnCue = false;
+	private bool preparing = false;
+
+
+	void OnEnable() {
+		MusicPlayer.OnApexPrepare += prepareStart;
+		MusicPlayer.OnApexStarted += prepareClose;
+		MusicPlayer.OnApexEnded += apexEnded;
+
+	}
+
+	void OnDisable() {
+		MusicPlayer.OnApexPrepare -= prepareStart;
+		MusicPlayer.OnApexStarted -= prepareClose;
+		MusicPlayer.OnApexEnded += apexEnded;
+	}
 
 	void Start () {
 		manager = GameObject.Find ("GameManager").GetComponent<GameManager> ();
@@ -36,7 +54,19 @@ public class Player : MonoBehaviour {
 
 		if (manager.playing) {
 
-			getInput ();
+			if (!dancing) {
+				getInput ();
+			} else {
+				dancingTimer -= Time.deltaTime;
+				if (dancingTimer <= 1.4 && dancingTimer >= 1.3) {
+					sounds.auw ();
+				} else if (dancingTimer <= 0) {
+					// Continue playing
+					dancing = false;
+					playerAnimation.stopDance ();
+					dancingTimer = manager.danceLength;
+				}
+			}
 
 			if (cooldown) {
 				cooldownTimer -= Time.deltaTime;
@@ -78,6 +108,12 @@ public class Player : MonoBehaviour {
 				pos = new Vector3 (transform.position.x - velUnit, transform.position.y, 0);
 				direction = 1;
 				playerAnimation.moveLeft ();
+			} else if (Input.GetKey(KeyCode.K)) {
+				if (preparing) {
+					dancingOnCue = true;
+				} else {
+					dance ();
+				}
 			} else {
 				playerAnimation.stand ();
 			}
@@ -106,6 +142,12 @@ public class Player : MonoBehaviour {
 				pos = new Vector3 (transform.position.x - velUnit, transform.position.y, 0);
 				direction = 1;
 				playerAnimation.moveLeft();
+			} else if (Input.GetKey(KeyCode.Tab)) {
+				if (preparing) {
+					dancingOnCue = true;
+				} else {
+					dance ();
+				}
 			} else {
 				playerAnimation.stand();
 			}
@@ -207,6 +249,29 @@ public class Player : MonoBehaviour {
 					return;
 				}
 			}
+		}
+	}
+
+	void dance() {
+		dancing = true;
+		playerAnimation.dance();
+	}
+
+	void prepareStart() {
+		preparing = true;
+	}
+
+	void prepareClose() {
+		preparing = false;
+		if (dancingOnCue) {
+			playerAnimation.dance ();
+		}
+	}
+
+	void apexEnded() {
+		if (dancingOnCue) {
+			dancingOnCue = false;
+			playerAnimation.stopDance ();
 		}
 	}
 

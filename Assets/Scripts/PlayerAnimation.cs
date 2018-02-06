@@ -9,7 +9,8 @@ public class PlayerAnimation : MonoBehaviour {
 	private bool movingDown;
 	private bool movingRight;
 	private bool movingLeft;
-	private bool alive = true;
+	private bool alive;
+	private bool dancing;
 
 	private int standingBoolAnimParamId;
 	private int walkingUpBoolAnimParamId;
@@ -17,6 +18,7 @@ public class PlayerAnimation : MonoBehaviour {
 	private int walkingRightBoolAnimParamId;
 	private int walkingLeftBoolAnimParamId;
 	private int aliveBoolAnimParamId;
+	private int dancingBoolAnimParamId;
 
 	private Animator animator;
 
@@ -27,11 +29,14 @@ public class PlayerAnimation : MonoBehaviour {
 	[SerializeField] string walkingRightBoolAnimParamName;
 	[SerializeField] string walkingLeftBoolAnimParamName;
 	[SerializeField] string aliveBoolAnimParamName;
+	[SerializeField] string dancingBoolAnimParamName;
 
 
 	// Use this for initialization
 	void Start () {
+		alive = true;
 		standing = true;
+		dancing = false;
 
 		animator = GetComponent<Animator> ();
 		standingBoolAnimParamId = Animator.StringToHash(standingBoolAnimParamName);
@@ -40,6 +45,7 @@ public class PlayerAnimation : MonoBehaviour {
 		walkingRightBoolAnimParamId = Animator.StringToHash(walkingRightBoolAnimParamName);
 		walkingLeftBoolAnimParamId = Animator.StringToHash(walkingLeftBoolAnimParamName);
 		aliveBoolAnimParamId = Animator.StringToHash(aliveBoolAnimParamName);
+		dancingBoolAnimParamId = Animator.StringToHash(dancingBoolAnimParamName);
 	}
 	
 	// Update is called once per frame
@@ -51,6 +57,7 @@ public class PlayerAnimation : MonoBehaviour {
 		animator.SetBool(walkingRightBoolAnimParamId, movingRight);
 		animator.SetBool(walkingLeftBoolAnimParamId, movingLeft);
 		animator.SetBool(aliveBoolAnimParamId, alive);
+		animator.SetBool(dancingBoolAnimParamId, dancing);
 	}
 
 	public void logStatus() {
@@ -123,6 +130,29 @@ public class PlayerAnimation : MonoBehaviour {
 		movingRight = false;
 		movingLeft = false;
 		standing = false;
+		dancing = false;
 		alive = false;
+	}
+
+	public void dance() {
+		if (alive) {
+			dancing = true;
+			movingUp = false;
+			movingDown = false;
+			movingRight = false;
+			movingLeft = false;
+			standing = false;
+		}
+	}
+
+	public void stopDance() {
+		if (alive) {
+			dancing = false;
+			movingUp = false;
+			movingDown = false;
+			movingRight = false;
+			movingLeft = false;
+			standing = true;
+		}
 	}
 }

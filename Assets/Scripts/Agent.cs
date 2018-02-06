@@ -29,12 +29,28 @@ public class Agent : MonoBehaviour {
 	private float moveTimer = 0;
 	private int currentMove = 0;
 
+	float auwTimer;
+
+	bool dancing;
+
+	void OnEnable() {
+		MusicPlayer.OnApexStarted += dance;
+		MusicPlayer.OnApexEnded += stopDance;
+	}
+
+	void OnDisable() {
+		MusicPlayer.OnApexStarted -= dance;
+		MusicPlayer.OnApexEnded -= stopDance;
+	}
+
 	// Use this for initialization
 	void Start () {
 		manager = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 		sounds = GameObject.Find ("Sounds").GetComponent<Sounds> ();
 		playerAnimation = GetComponent<PlayerAnimation> ();
 		velUnit = manager.velUnit;
+		auwTimer = manager.danceLength;
+		dancing = false;
 	}
 
 	// Update is called once per frame
@@ -42,7 +58,16 @@ public class Agent : MonoBehaviour {
 
 		if (alive && manager.playing) {
 
-			makeMove();
+			if (!dancing) {
+				makeMove ();
+			} else {
+				auwTimer -= Time.deltaTime;
+				if (auwTimer <= 1.3 && auwTimer >= 1.2) {
+					sounds.auwPlural ();
+				} else if (auwTimer <= 0) {
+					auwTimer = manager.danceLength;
+				}
+			}
 
 			moveTimer -= Time.deltaTime;
 
@@ -128,7 +153,20 @@ public class Agent : MonoBehaviour {
 		alive = false;
 		sounds.stabbed ();
 		playerAnimation.murdered ();
+		GetComponent<SpriteRenderer> ().sortingOrder = -1;
 		var collider = GetComponent<CircleCollider2D> ();
 		Destroy (collider);
+	}
+
+	void dance() {	
+		if (alive) {
+			dancing = true;
+			playerAnimation.dance();
+		}
+	}
+
+	void stopDance() {
+		dancing = false;
+		playerAnimation.stopDance();
 	}
 }

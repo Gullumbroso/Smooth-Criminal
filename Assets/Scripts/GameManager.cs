@@ -18,6 +18,9 @@ public class GameManager : MonoBehaviour {
 	public int postMurderCooldown = 15;
 
 	[SerializeField]
+	public float danceLength = 15f;
+
+	[SerializeField]
 	public bool debugMode;
 
 	public GameObject[] prefabs;

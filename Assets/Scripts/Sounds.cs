@@ -23,4 +23,16 @@ public class Sounds : MonoBehaviour {
 	public void missedStabbed() {
 		sounds [1].Play ();
 	}
+
+	public void auw() {
+		if (!sounds [2].isPlaying) {
+			sounds [2].Play ();
+		}
+	}
+
+	public void auwPlural() {
+		if (!sounds [3].isPlaying) {
+			sounds [3].Play ();
+		}
+	}
 }
