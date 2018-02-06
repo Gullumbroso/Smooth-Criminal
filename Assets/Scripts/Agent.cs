@@ -88,22 +88,23 @@ public class Agent : MonoBehaviour {
 	void makeMove() {
 
 		Vector3 pos = new Vector3 (transform.position.x, transform.position.y, 0);
+		float step = velUnit * Time.deltaTime;
 
 		switch (currentMove) {
 		case 1:
-			pos = new Vector3 (transform.position.x, transform.position.y + velUnit, 0);
+			pos = new Vector3 (transform.position.x, transform.position.y + step, 0);
 			playerAnimation.moveUp();
 			break;
 		case 2:
-			pos = new Vector3 (transform.position.x + velUnit, transform.position.y, 0);
+			pos = new Vector3 (transform.position.x + step, transform.position.y, 0);
 			playerAnimation.moveRight();
 			break;
 		case 3:
-			pos = new Vector3 (transform.position.x, transform.position.y - velUnit, 0);
+			pos = new Vector3 (transform.position.x, transform.position.y - step, 0);
 			playerAnimation.moveDown ();
 			break;
 		case 4:
-			pos = new Vector3 (transform.position.x - velUnit, transform.position.y, 0);
+			pos = new Vector3 (transform.position.x - step, transform.position.y, 0);
 			playerAnimation.moveLeft ();
 			break;
 		default:

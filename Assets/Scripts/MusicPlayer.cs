@@ -19,13 +19,13 @@ public class MusicPlayer : MonoBehaviour {
 	public AudioSource[] verses;
 
 	int[] versesCount;
-	int counter = 0;
 	int curVerseIdx;
 	int nextVerseIdx;
-	int level = 0;
+	int counter = 0;
+	int level = 1;
 	int apexCount = 0;
 
-	float prepareTime = 1.2f;
+	float prepareTime = 1.45f;
 
 	bool apex;
 

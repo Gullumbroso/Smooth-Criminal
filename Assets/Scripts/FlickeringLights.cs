@@ -8,7 +8,7 @@ public class FlickeringLights : MonoBehaviour {
 	float alpha;
 	bool flickering;
 	bool flickerDown;
-	const float flickerStep = 0.126f;
+	const float flickerStep = 4.18f;
 
 	// Use this for initialization
 	void Start () {
@@ -30,18 +30,19 @@ public class FlickeringLights : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		float step = flickerStep * Time.deltaTime;
 		if (flickering) {
 			if (flickerDown && alpha > 0.2f) {
-				alpha -= flickerStep;
+				alpha -= step;
 			} else if (!flickerDown && alpha < 1.0f) {
-				alpha += flickerStep;
+				alpha += step;
 			} else {
 				flickerDown = !flickerDown; 
 			}
 			dim ();
 		} else {
 			if (alpha < 1.0f) {
-				alpha += flickerStep;
+				alpha += step;
 				dim ();
 			}
 		}

@@ -90,22 +90,24 @@ public class Player : MonoBehaviour {
 	private void getInput() {
 
 		Vector3 pos = new Vector3 (transform.position.x, transform.position.y, 0);
+		float step = velUnit * Time.deltaTime;
+
 		if (gameObject.tag == PLAYER1_TAG) {
 			
 			if (Input.GetKey (KeyCode.UpArrow)) {
-				pos = new Vector3 (transform.position.x, transform.position.y + velUnit, 0);
+				pos = new Vector3 (transform.position.x, transform.position.y + step, 0);
 				direction = 2;
 				playerAnimation.moveUp ();
 			} else if (Input.GetKey (KeyCode.DownArrow)) {
-				pos = new Vector3 (transform.position.x, transform.position.y - velUnit, 0);
+				pos = new Vector3 (transform.position.x, transform.position.y - step, 0);
 				direction = 0;
 				playerAnimation.moveDown ();
 			} else if (Input.GetKey (KeyCode.RightArrow)) {
-				pos = new Vector3 (transform.position.x + velUnit, transform.position.y, 0);
+				pos = new Vector3 (transform.position.x + step, transform.position.y, 0);
 				direction = 3;
 				playerAnimation.moveRight ();
 			} else if (Input.GetKey (KeyCode.LeftArrow)) {
-				pos = new Vector3 (transform.position.x - velUnit, transform.position.y, 0);
+				pos = new Vector3 (transform.position.x - step, transform.position.y, 0);
 				direction = 1;
 				playerAnimation.moveLeft ();
 			} else if (Input.GetKey(KeyCode.K)) {
@@ -127,19 +129,19 @@ public class Player : MonoBehaviour {
 		} else if (gameObject.tag == PLAYER2_TAG) {
 
 			if (Input.GetKey (KeyCode.W)) {
-				pos = new Vector3 (transform.position.x, transform.position.y + velUnit, 0);
+				pos = new Vector3 (transform.position.x, transform.position.y + step, 0);
 				direction = 2;
 				playerAnimation.moveUp();
 			} else if (Input.GetKey (KeyCode.S)) {
-				pos = new Vector3 (transform.position.x, transform.position.y - velUnit, 0);
+				pos = new Vector3 (transform.position.x, transform.position.y - step, 0);
 				direction = 0;
 				playerAnimation.moveDown();
 			} else if (Input.GetKey (KeyCode.D)) {
-				pos = new Vector3 (transform.position.x + velUnit, transform.position.y, 0);
+				pos = new Vector3 (transform.position.x + step, transform.position.y, 0);
 				direction = 3;
 				playerAnimation.moveRight();
 			} else if (Input.GetKey (KeyCode.A)) {
-				pos = new Vector3 (transform.position.x - velUnit, transform.position.y, 0);
+				pos = new Vector3 (transform.position.x - step, transform.position.y, 0);
 				direction = 1;
 				playerAnimation.moveLeft();
 			} else if (Input.GetKey(KeyCode.Tab)) {
