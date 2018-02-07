@@ -40,6 +40,13 @@ public class MusicPlayer : MonoBehaviour {
 
 	float verseTimer;
 
+	void OnEnable() {
+		GameManager.OnRestart += resetMusicPlayer;
+	}
+
+	void OnDisable() {
+		GameManager.OnRestart -= resetMusicPlayer;
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -86,7 +93,10 @@ public class MusicPlayer : MonoBehaviour {
 	}
 
 	void resetMusicPlayer() {
+		print ("Reseting Music Player!");
 		playedFirstVerse = false;
+		apex = false;
+		resetCounters ();
 	}
 
 	void nextVerse () {

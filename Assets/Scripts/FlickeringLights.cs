@@ -16,21 +16,29 @@ public class FlickeringLights : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		manager = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+		lights = GameObject.FindGameObjectsWithTag ("Lights");
+		shades = GameObject.FindGameObjectsWithTag ("Shades");
 		alpha = 1.0f;
 		flickerDown = true;
 		flickering = false;
-		lights = GameObject.FindGameObjectsWithTag ("Lights");
-		shades = GameObject.FindGameObjectsWithTag ("Shades");
+	}
+
+	void reset() {
+		alpha = 1.0f;
+		flickerDown = true;
+		flickering = false;
 	}
 
 	void OnEnable() {
 		MusicPlayer.OnApexPrepare += flicker;
 		MusicPlayer.OnApexEnded += stopFlicker;
+		GameManager.OnRestart += reset;
 	}
 
 	void OnDisable() {
 		MusicPlayer.OnApexPrepare -= flicker;
 		MusicPlayer.OnApexEnded -= stopFlicker;
+		GameManager.OnRestart -= reset;
 	}
 	
 	void Update () {

@@ -36,11 +36,13 @@ public class Agent : MonoBehaviour {
 	void OnEnable() {
 		MusicPlayer.OnApexStarted += dance;
 		MusicPlayer.OnApexEnded += stopDance;
+		GameManager.OnRestart += resetAgent;
 	}
 
 	void OnDisable() {
 		MusicPlayer.OnApexStarted -= dance;
 		MusicPlayer.OnApexEnded -= stopDance;
+		GameManager.OnRestart -= resetAgent;
 	}
 
 	// Use this for initialization
@@ -49,6 +51,13 @@ public class Agent : MonoBehaviour {
 		sounds = GameObject.Find ("Sounds").GetComponent<Sounds> ();
 		playerAnimation = GetComponent<PlayerAnimation> ();
 		velUnit = manager.velUnit;
+		auwTimer = manager.danceLength;
+		alive = true;
+		dancing = false;
+		playerAnimation.moveDown ();
+	}
+
+	void resetAgent() {
 		auwTimer = manager.danceLength;
 		alive = true;
 		dancing = false;
@@ -76,16 +85,18 @@ public class Agent : MonoBehaviour {
 			if (moveTimer <= 0) {
 
 				// Make a decision what to do
-				float duration = Random.Range(MIN_MOVE_DURATION, MAX_MOVE_DURATION);
+				float duration = Random.Range (MIN_MOVE_DURATION, MAX_MOVE_DURATION);
 				int move = getNextMove (currentMove);
 
 				// Update the movement values
 				moveTimer = duration;
 				currentMove = move;
 			}
+		} else if (!manager.playing) {
+			playerAnimation.moveDown ();
 		}
 	}
-
+		
 	void makeMove() {
 
 		Vector3 pos = new Vector3 (transform.position.x, transform.position.y, 0);

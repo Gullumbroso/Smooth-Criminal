@@ -26,10 +26,19 @@ public class GameManager : MonoBehaviour {
 	[SerializeField]
 	public float blackFadeStep = 1.0f;
 
+	[SerializeField]
+	public float gameoverLength = 2.0f;
+
+	float gameoverTimer;
+	bool gameover;
+
 	public GameObject openingScreen;
 	public GameObject blackScreen;
 	public Sounds sounds;
 	public AudioSource themeSong;
+
+	public delegate void Restart ();
+	public static event Restart OnRestart;
 
 	public CountDown countDown;
 
@@ -67,6 +76,8 @@ public class GameManager : MonoBehaviour {
 		nonTransparent = new Color (1.0f, 1.0f, 1.0f, 1.0f);
 		winnerTitle.canvasRenderer.SetAlpha (0);
 		newGame.canvasRenderer.SetAlpha (0);
+		gameover = false;
+		gameoverTimer = gameoverLength;
 		showOpeninigScreen ();
 	}
 
@@ -122,6 +133,14 @@ public class GameManager : MonoBehaviour {
 		} else {
 			// Playing
 		}
+
+		if (gameover) {
+			gameoverTimer -= Time.deltaTime;
+			if (gameoverTimer < 0) {
+				gameoverTimer = gameoverLength;
+				restart ();
+			}
+		}
 	}
 
 	void blackFadeIn() {
@@ -164,7 +183,8 @@ public class GameManager : MonoBehaviour {
 
 		for (int i = 0; i < numOfAgents; i++) {
 			randPos = new Vector3 (Random.Range (-4, 4), Random.Range (-4, 4), Random.Range (-4, 4));
-			Instantiate(prefabs[0], randPos, Quaternion.identity);
+			var agent = Instantiate(prefabs[0], randPos, Quaternion.identity);
+			agent.tag = "Agent(Clone)";
 		}
 	}
 
@@ -174,18 +194,24 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void endGame(string winner) {
-		print ("Game ended!");
 		playing = false;
+		gameover = true;
 		Time.timeScale = 0.25f;
 		winnerTitle.text = winner + " Wins!";
 	}
 
 	private void restart() {
-		GameObject[] agents = GameObject.FindGameObjectsWithTag ("Agent");
+		if (OnRestart != null) {
+			OnRestart ();
+		}
+		GameObject[] agents = GameObject.FindGameObjectsWithTag ("Agent(Clone)");
 		foreach(GameObject obj in agents) {
 			Destroy(obj);
 		}
-		player1.placeInScreen ();
-		spawnAgents ();
+		winnerTitle.canvasRenderer.SetAlpha (0);
+		newGame.canvasRenderer.SetAlpha (0);
+		gameover = false;
+		Time.timeScale = 1.0f;
+		showOpeninigScreen ();
 	}
 }

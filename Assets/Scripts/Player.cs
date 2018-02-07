@@ -26,13 +26,14 @@ public class Player : MonoBehaviour {
 		MusicPlayer.OnApexPrepare += prepareStart;
 		MusicPlayer.OnApexStarted += prepareClose;
 		MusicPlayer.OnApexEnded += apexEnded;
-
+		GameManager.OnRestart += resetPlayer;
 	}
 
 	void OnDisable() {
 		MusicPlayer.OnApexPrepare -= prepareStart;
 		MusicPlayer.OnApexStarted -= prepareClose;
 		MusicPlayer.OnApexEnded += apexEnded;
+		GameManager.OnRestart -= resetPlayer;
 	}
 
 	void Start () {
@@ -47,6 +48,13 @@ public class Player : MonoBehaviour {
 		playerAnimation = GetComponent<PlayerAnimation> ();
 		velUnit = manager.velUnit;
 		cooldownTimer = manager.postMurderCooldown;
+		placeInScreen ();
+	}
+
+	void resetPlayer() {
+		print ("Reset Player " + tag + " !");
+		cooldownTimer = manager.postMurderCooldown;
+		playerAnimation.reset ();
 		placeInScreen ();
 	}
 	

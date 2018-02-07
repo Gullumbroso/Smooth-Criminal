@@ -47,6 +47,12 @@ public class PlayerAnimation : MonoBehaviour {
 		aliveBoolAnimParamId = Animator.StringToHash(aliveBoolAnimParamName);
 		dancingBoolAnimParamId = Animator.StringToHash(dancingBoolAnimParamName);
 	}
+
+	public void reset() {
+		alive = true;
+		movingDown = true;
+		dancing = false;
+	}
 	
 	// Update is called once per frame
 	void Update () {
