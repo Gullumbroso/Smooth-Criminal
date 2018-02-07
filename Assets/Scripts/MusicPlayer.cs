@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class MusicPlayer : MonoBehaviour {
 
-	private const int HOUSE_1_IDX = 0;
-	private const int HOUSE_2_IDX = 1;
+	private const int VERSE_1_IDX = 0;
+	private const int VERSE_2_IDX = 1;
 	private const int CHORUS_1_IDX = 2;
 	private const int CHORUS_2_IDX = 3;
 	private const int CHORUS_3_IDX = 4;
@@ -16,51 +16,77 @@ public class MusicPlayer : MonoBehaviour {
 	public static event Apex OnApexStarted;
 	public static event Apex OnApexEnded;
 
+	GameManager manager;
+	Sounds sounds;
+
 	public AudioSource[] verses;
+
 
 	int[] versesCount;
 	int curVerseIdx;
 	int nextVerseIdx;
 	int counter = 0;
-	int level = 1;
-	int apexCount = 0;
+	int level = 0;
+	int didApexCounter;
 
 	float prepareTime = 1.45f;
 
+	int lastLevelRandomFactor = 35;
+
+	bool playedFirstVerse;
 	bool apex;
+
+	bool debugMode = false;
 
 	float verseTimer;
 
 
 	// Use this for initialization
 	void Start () {
+		manager = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+		sounds = GameObject.Find ("Sounds").GetComponent<Sounds> ();
 		versesCount = new int[verses.Length];
+		playedFirstVerse = false;
 		apex = false;
+		didApexCounter = 0;
 		startMusic ();
+
+		if (debugMode) {
+			level = 3;
+			lastLevelRandomFactor = 85;
+		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-		if (!apex && nextVerseIdx == APEX_IDX && verseTimer < prepareTime) {
-			prepareForApex ();
-		}
+		if (manager.playing) {
+			if (!apex && nextVerseIdx == APEX_IDX && verseTimer < prepareTime) {
+				prepareForApex ();
+			}
 
-		if (nextVerseIdx == APEX_IDX && verseTimer < 0.335f) {
-			nextVerse ();
-		} if (verseTimer < 0.117f) {
-			nextVerse ();
-		} else {
-			verseTimer -= Time.deltaTime;
+			if (!playedFirstVerse && !sounds.isAuwPlaying()) {
+				verses [curVerseIdx].Play ();
+				playedFirstVerse = true;
+			}
+
+			if (verseTimer < 0.117f) {
+				nextVerse ();
+			} else {
+				verseTimer -= Time.deltaTime;
+			}
 		}
 	}
 
 	void startMusic() {
-		curVerseIdx = 0;
-		nextVerseIdx = 0;
+		curVerseIdx = selectNext();
+		nextVerseIdx = selectNext();
 		AudioSource house1 = verses [curVerseIdx];
 		verseTimer = house1.clip.length;
-		house1.Play ();
+	}
+
+	void resetMusicPlayer() {
+		playedFirstVerse = false;
 	}
 
 	void nextVerse () {
@@ -98,46 +124,186 @@ public class MusicPlayer : MonoBehaviour {
 		switch (level) {
 
 		case 0:
-			while (versesCount [0] < 2) {
-				versesCount [0]++;
-				return 0;
+			print ("Level " + level);
+			while (versesCount [VERSE_1_IDX] < 2) {
+				versesCount [VERSE_1_IDX]++;
+				return VERSE_1_IDX;
 			}
-			while (versesCount [1] < 4) {
-				versesCount [1]++;
-				return 1;
+			while (versesCount [VERSE_2_IDX] < 2) {
+				versesCount [VERSE_2_IDX]++;
+				return VERSE_2_IDX;
 			}
-			while (versesCount [2] < 3) {
-				versesCount [2]++;
-				return 2;
+			while (versesCount [CHORUS_1_IDX] < 2) {
+				versesCount [CHORUS_1_IDX]++;
+				return CHORUS_1_IDX;
 			}
-			while (versesCount [3] < 1) {
-				versesCount [3]++;
-				return 3;
+			while (versesCount [CHORUS_2_IDX] < 1) {
+				versesCount [CHORUS_2_IDX]++;
+				return CHORUS_2_IDX;
 			}
-			while (versesCount [4] < 1) {
-				versesCount [4]++;
-				return 4;
+			while (versesCount [CHORUS_3_IDX] < 1) {
+				versesCount [CHORUS_3_IDX]++;
+				return CHORUS_3_IDX;
 			}
-			while (versesCount [2] < 4) {
-				versesCount [2]++;
-				return 2;
+			while (versesCount [CHORUS_1_IDX] < 3) {
+				versesCount [CHORUS_1_IDX]++;
+				return CHORUS_1_IDX;
 			}
-			print ("Reached the apex!");
 			level++;
-			return 5;
+			resetCounters ();
+			return APEX_IDX;
 
 		case 1:
-			if (curVerseIdx != APEX_IDX && counter % 2 == 0) {
-				return APEX_IDX;
-			} else if (curVerseIdx == APEX_IDX) {
-				counter = 0;
-				return HOUSE_1_IDX;
-			} else {
-				return (curVerseIdx + 1) % verses.Length;
+			print ("Level " + level);
+			while (versesCount [VERSE_1_IDX] < 2) {
+				versesCount [VERSE_1_IDX]++;
+				return VERSE_1_IDX;
+			}
+			while (versesCount [CHORUS_1_IDX] < 2) {
+				versesCount [CHORUS_1_IDX]++;
+				return CHORUS_1_IDX;
+			}
+			while (versesCount [CHORUS_2_IDX] < 1) {
+				versesCount [CHORUS_2_IDX]++;
+				return CHORUS_2_IDX;
+			}
+			while (versesCount [CHORUS_3_IDX] < 1) {
+				versesCount [CHORUS_3_IDX]++;
+				return CHORUS_3_IDX;
+			}
+			while (versesCount [CHORUS_1_IDX] < 3) {
+				versesCount [CHORUS_1_IDX]++;
+				return CHORUS_1_IDX;
+			}
+			level++;
+			resetCounters ();
+			return APEX_IDX;
+
+		case 2:
+			print ("Level " + level);
+				while (versesCount [VERSE_1_IDX] < 2) {
+				versesCount [VERSE_1_IDX]++;
+				return VERSE_1_IDX;
+			}
+			if (didApexCounter < 1) {
+				didApexCounter++;
+				int lotto = Random.Range (0, 100);
+				if (lotto > 50) {
+					return APEX_IDX;
+				}
 			} 
-		
+			while (versesCount [VERSE_2_IDX] < 2) {
+				versesCount [VERSE_2_IDX]++;
+				return VERSE_2_IDX;
+			}
+			while (versesCount [CHORUS_1_IDX] < 2) {
+				versesCount [CHORUS_1_IDX]++;
+				return CHORUS_1_IDX;
+			}
+			if (didApexCounter < 2) {
+				didApexCounter++;
+				int lotto = Random.Range (0, 100);
+				if (lotto > 50) {
+					return APEX_IDX;
+				}
+			}
+			while (versesCount [CHORUS_2_IDX] < 1) {
+				versesCount [CHORUS_2_IDX]++;
+				return CHORUS_2_IDX;
+			}
+			while (versesCount [CHORUS_3_IDX] < 1) {
+				versesCount [CHORUS_3_IDX]++;
+				return CHORUS_3_IDX;
+			}
+			while (versesCount [CHORUS_1_IDX] < 3) {
+				versesCount [CHORUS_1_IDX]++;
+				return CHORUS_1_IDX;
+			}
+			if (didApexCounter < 3) {
+				didApexCounter++;
+				int lotto = Random.Range (0, 100);
+				if (lotto > 50) {
+					level++;
+					resetCounters ();
+					return APEX_IDX;
+				}
+			}
+			while (versesCount [CHORUS_1_IDX] < 4) {
+				versesCount [CHORUS_1_IDX]++;
+				return CHORUS_1_IDX;
+			}
+			level++;
+			resetCounters ();
+			return APEX_IDX;
+
 		default:
-			return HOUSE_2_IDX;
+			print ("Level " + level);
+				while (versesCount [VERSE_1_IDX] < 2) {
+				versesCount [VERSE_1_IDX]++;
+				return VERSE_1_IDX;
+			}
+			if (didApexCounter < 1) {
+				didApexCounter++;
+				int lotto = Random.Range (0, 100);
+				if (lotto < lastLevelRandomFactor) {
+					return APEX_IDX;
+				}
+			}
+			while (versesCount [VERSE_2_IDX] < 2) {
+				versesCount [VERSE_2_IDX]++;
+				return VERSE_2_IDX;
+			}
+			if (didApexCounter < 2) {
+				didApexCounter++;
+				int lotto = Random.Range (0, 100);
+				if (lotto < lastLevelRandomFactor) {
+					return APEX_IDX;
+				}
+			}
+			while (versesCount [CHORUS_1_IDX] < 2) {
+				versesCount [CHORUS_1_IDX]++;
+				return CHORUS_1_IDX;
+			}
+			if (didApexCounter < 3) {
+				didApexCounter++;
+				int lotto = Random.Range (0, 100);
+				if (lotto < lastLevelRandomFactor) {
+					return APEX_IDX;
+				}
+			}
+			while (versesCount [CHORUS_2_IDX] < 1) {
+				versesCount [CHORUS_2_IDX]++;
+				return CHORUS_2_IDX;
+			}
+			while (versesCount [CHORUS_3_IDX] < 1) {
+				versesCount [CHORUS_3_IDX]++;
+				return CHORUS_3_IDX;
+			}
+			while (versesCount [CHORUS_1_IDX] < 3) {
+				versesCount [CHORUS_1_IDX]++;
+				return CHORUS_1_IDX;
+			}
+			if (didApexCounter < 4) {
+				didApexCounter++;
+				int lotto = Random.Range (0, 100);
+				if (lotto < lastLevelRandomFactor) {
+					return APEX_IDX;
+				}
+			}
+			while (versesCount [CHORUS_1_IDX] < 4) {
+				versesCount [CHORUS_1_IDX]++;
+				return CHORUS_1_IDX;
+			}
+			level++;
+			resetCounters ();
+			return APEX_IDX;
+		}
+	}
+
+	void resetCounters() {
+		didApexCounter = 0;
+		for (int i = 0; i < versesCount.Length; i++) {
+			versesCount [i] = 0;
 		}
 	}
 

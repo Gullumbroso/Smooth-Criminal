@@ -11,7 +11,6 @@ public class Player : MonoBehaviour {
 	private Sounds sounds;
 	private CircleCollider2D selfCollider;
 	public PlayerAnimation playerAnimation;
-	GameObject[] markers;
 	private int direction = 0; // 0-down, 1-left, 2-up, 3-right
 	private float velUnit;
 	private float cooldownTimer;
@@ -43,10 +42,6 @@ public class Player : MonoBehaviour {
 		velUnit = manager.velUnit;
 		cooldownTimer = manager.postMurderCooldown;
 		placeInScreen ();
-
-		if (manager.debugMode) {
-			drawMarkers ();
-		}
 	}
 	
 	// Update is called once per frame
@@ -76,10 +71,6 @@ public class Player : MonoBehaviour {
 					cooldownTimer = manager.postMurderCooldown;
 				}
 			}
-		}
-
-		if (manager.debugMode) {
-			positionMarkers ();
 		}
 	}
 
@@ -275,18 +266,5 @@ public class Player : MonoBehaviour {
 			dancingOnCue = false;
 			playerAnimation.stopDance ();
 		}
-	}
-
-	void drawMarkers() {
-
-		markers[0] = Instantiate(manager.markers[0], selfCollider.transform.position, Quaternion.identity);
-		markers[1] = Instantiate(manager.markers[1], selfCollider.transform.position, Quaternion.identity);
-	}
-
-	void positionMarkers() {
-		var pos = selfCollider.transform.position;
-
-		markers [0].transform.position = pos;
-		markers [1].transform.position = pos;
 	}
 }

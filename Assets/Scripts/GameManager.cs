@@ -23,61 +23,139 @@ public class GameManager : MonoBehaviour {
 	[SerializeField]
 	public bool debugMode;
 
+	[SerializeField]
+	public float blackFadeStep = 1.0f;
+
+	public GameObject openingScreen;
+	public GameObject blackScreen;
+	public Sounds sounds;
+	public AudioSource themeSong;
+
+	public CountDown countDown;
+
 	public GameObject[] prefabs;
 
 	public Player player1;
 	public Player player2;
 
-	public GameObject[] markers;
-
-	public bool playing = true;
+	public bool opening;
+	public bool playing;
 
 	public Text winnerTitle;
-	private int blinkTime = 0;
-	private bool blink = false;
 
 	public Text newGame;
 	private bool showNewGame;
 
+	SpriteRenderer openingScreenSprite;
+	SpriteRenderer blackScreenSprite;
+
+	bool starting;
+	bool fadingOut;
+	bool fadingIn;
+	bool isCountdownFinished;
+
+	Color transparent;
+	Color nonTransparent;
+
+
 	void Start () {
-		spawnAgents ();
+		openingScreenSprite = openingScreen.GetComponent<SpriteRenderer> ();
+		blackScreenSprite = blackScreen.GetComponent<SpriteRenderer> ();
+		sounds = GameObject.Find("Sounds").GetComponent<Sounds> ();
+		countDown = GameObject.Find("CountDown").GetComponent<CountDown> ();
+		transparent = new Color (1.0f, 1.0f, 1.0f, 0);
+		nonTransparent = new Color (1.0f, 1.0f, 1.0f, 1.0f);
 		winnerTitle.canvasRenderer.SetAlpha (0);
 		newGame.canvasRenderer.SetAlpha (0);
+		showOpeninigScreen ();
 	}
-	
+
+	void showOpeninigScreen() {
+		opening = true;
+		playing = false;
+		starting = false;
+		openingScreenSprite.color = nonTransparent;
+		blackScreenSprite.color = transparent;
+		themeSong.Play ();
+	}
+
+	void hideOpeningScreen() {
+		opening = false;
+		openingScreenSprite.color = transparent;
+	}
+
+	void startNewGame() {
+		opening = false;
+		starting = true;
+		fadingOut = true;
+		isCountdownFinished = false;
+		spawnAgents ();
+	}
+
+	void startPlaying() {
+		playing = true;
+		openingScreenSprite.color = transparent;
+		blackScreenSprite.color = transparent;
+		sounds.auw ();
+		sounds.drum ();
+	}
+		
 	// Update is called once per frame
 	void Update () {
 
-		if (!playing) {
-
-			if (showNewGame) {
-				if (Input.anyKey) {
-					restart ();
-				}
+		if (starting) {
+			if (fadingOut) {
+				blackFadeIn ();
+				exitMusic ();
+			} else if (!isCountdownFinished) {
+				countDown.startCountDown ();
 			} else {
-				blinkTime++;
-				if (blinkTime % 40 == 0) {
-					blink = !blink;
-				}
-				winnerTitle.canvasRenderer.SetAlpha (blink ? 1 : 0);
-
-				if (blinkTime % 480 == 0) {
-					blinkTime = 0;
-					blink = false;
-					showNewGame = true;
-					newGame.canvasRenderer.SetAlpha (1);
-				}
+				starting = false;
+				startPlaying ();
 			}
 		}
 
-		if (debugMode) {
-			markers [0].GetComponent<SpriteRenderer> ().sortingOrder = -1;
-			markers [1].GetComponent<SpriteRenderer> ().sortingOrder = -2;
+		if (opening) {
+			if (Input.anyKey) {
+				startNewGame ();
+			}
 		} else {
-			foreach (GameObject marker in markers) {
-				marker.GetComponent<SpriteRenderer> ().sortingOrder = -10;
-			} 
+			// Playing
 		}
+	}
+
+	void blackFadeIn() {
+		if (blackScreenSprite.color.a < 1.0f) {
+			var alpha = blackScreenSprite.color.a;
+			blackScreenSprite.color = new Color (1, 1, 1, alpha + blackFadeStep * Time.deltaTime);
+		} else {
+			fadingOut = false;
+		}
+	}
+
+	void blackFadeOut() {
+		if (blackScreenSprite.color.a > 0) {
+			var alpha = blackScreenSprite.color.a;
+			blackScreenSprite.color = new Color (1, 1, 1, alpha - blackFadeStep * Time.deltaTime);
+		} else {
+			fadingIn = false;
+		}
+	}
+
+	void exitMusic () {
+		if (themeSong.isPlaying) {
+			if (themeSong.volume > 0) {
+				themeSong.volume -= blackFadeStep * Time.deltaTime;
+			} else {
+				themeSong.volume = 1.0f;
+				themeSong.Stop ();
+			}
+		}
+	}
+
+	public void countdownFinished() {
+		isCountdownFinished = true;
+		fadingIn = true;
 	}
 
 	void spawnAgents() {

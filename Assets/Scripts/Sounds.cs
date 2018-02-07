@@ -35,4 +35,14 @@ public class Sounds : MonoBehaviour {
 			sounds [3].Play ();
 		}
 	}
+
+	public void drum() {
+		if (!sounds [4].isPlaying) {
+			sounds [4].Play ();
+		}
+	}
+
+	public bool isAuwPlaying() {
+		return sounds [2].isPlaying;
+	}
 }

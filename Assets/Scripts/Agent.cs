@@ -25,7 +25,7 @@ public class Agent : MonoBehaviour {
 	PlayerAnimation playerAnimation;
 	float velUnit;
 
-	private bool alive = true;
+	private bool alive;
 	private float moveTimer = 0;
 	private int currentMove = 0;
 
@@ -50,7 +50,9 @@ public class Agent : MonoBehaviour {
 		playerAnimation = GetComponent<PlayerAnimation> ();
 		velUnit = manager.velUnit;
 		auwTimer = manager.danceLength;
+		alive = true;
 		dancing = false;
+		playerAnimation.moveDown ();
 	}
 
 	// Update is called once per frame
@@ -81,7 +83,6 @@ public class Agent : MonoBehaviour {
 				moveTimer = duration;
 				currentMove = move;
 			}
-
 		}
 	}
 

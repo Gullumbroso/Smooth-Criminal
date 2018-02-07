@@ -35,7 +35,7 @@ public class PlayerAnimation : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		alive = true;
-		standing = true;
+		movingDown = true;
 		dancing = false;
 
 		animator = GetComponent<Animator> ();
@@ -71,6 +71,10 @@ public class PlayerAnimation : MonoBehaviour {
 			Debug.Log ("LEFT");
 		if (standing)
 			Debug.Log ("STAND");
+	}
+
+	public void setAlive() {
+		alive = true;
 	}
 
 	public void moveUp() {
