@@ -21,6 +21,11 @@ public class Player : MonoBehaviour {
 	private bool dancingOnCue = false;
 	private bool preparing = false;
 
+	private bool winDanceMove;
+	private bool dancingAsWinner;
+	private float winDanceMoveTimer1;
+	private float winDanceMoveTimer2;
+
 
 	void OnEnable() {
 		MusicPlayer.OnApexPrepare += prepareStart;
@@ -49,11 +54,19 @@ public class Player : MonoBehaviour {
 		velUnit = manager.velUnit;
 		cooldownTimer = manager.postMurderCooldown;
 		placeInScreen ();
+		winDanceMove = false;
+		winDanceMoveTimer1 = 1.5f;
+		winDanceMoveTimer2 = 4.0f;
+		dancingAsWinner = false;
 	}
 
 	void resetPlayer() {
 		print ("Reset Player " + tag + " !");
 		cooldownTimer = manager.postMurderCooldown;
+		winDanceMove = false;
+		winDanceMoveTimer1 = 1.5f;
+		winDanceMoveTimer2 = 4.0f;
+		dancingAsWinner = false;
 		playerAnimation.reset ();
 		placeInScreen ();
 	}
@@ -63,7 +76,7 @@ public class Player : MonoBehaviour {
 
 		if (manager.playing) {
 
-			if (!dancing) {
+			if (!dancing && !dancingOnCue) {
 				getInput ();
 			} else {
 				dancingTimer -= Time.deltaTime;
@@ -85,6 +98,24 @@ public class Player : MonoBehaviour {
 					knifeFeeback.cooldownEnd ();
 					cooldownTimer = manager.postMurderCooldown;
 				}
+			}
+		
+		} else if (winDanceMove) {
+			winDanceMoveTimer1 -= Time.deltaTime;
+			if (winDanceMoveTimer1 >= 0) {
+				var pos = new Vector3 (transform.position.x - velUnit * Time.deltaTime, transform.position.y, 0);
+				transform.position = manager.depthSim (pos);
+				direction = 3;
+				playerAnimation.moveRight ();
+			} else if (winDanceMoveTimer2 >= 0) {
+				winDanceMoveTimer2 -= Time.deltaTime;
+				if (!dancingAsWinner) {
+					dance ();
+					dancingAsWinner = true;
+				}
+			} else {
+				print ("Restart!");
+				manager.restart ();
 			}
 		}
 	}
@@ -280,5 +311,9 @@ public class Player : MonoBehaviour {
 			dancingOnCue = false;
 			playerAnimation.stopDance ();
 		}
+	}
+
+	public void winningAnimation() {
+		winDanceMove = true;
 	}
 }

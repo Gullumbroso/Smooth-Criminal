@@ -50,6 +50,9 @@ public class GameManager : MonoBehaviour {
 	public bool opening;
 	public bool playing;
 
+	float slowMoTimer;
+	bool slowMo;
+
 	public Text winnerTitle;
 
 	public Text newGame;
@@ -57,6 +60,8 @@ public class GameManager : MonoBehaviour {
 
 	SpriteRenderer openingScreenSprite;
 	public SpriteRenderer blackScreenSprite;
+
+	string theWinner;
 
 	bool starting;
 	bool fadingOut;
@@ -78,6 +83,8 @@ public class GameManager : MonoBehaviour {
 		newGame.canvasRenderer.SetAlpha (0);
 		gameover = false;
 		gameoverTimer = gameoverLength;
+		slowMoTimer = 0.9f;
+		slowMo = false;
 		showOpeninigScreen ();
 	}
 
@@ -141,6 +148,20 @@ public class GameManager : MonoBehaviour {
 				restart ();
 			}
 		}
+
+		if (slowMo) {
+			slowMoTimer -= Time.deltaTime;
+			if (slowMoTimer < 0) {
+				Time.timeScale = 1.0f;
+				if (theWinner == "Player 1") {
+					player1.winningAnimation ();
+				} else if (theWinner == "Player 2") {
+					player2.winningAnimation ();
+				} else {
+					print ("There is a problem!");
+				}
+			}
+		}
 	}
 
 	void blackFadeIn() {
@@ -195,12 +216,13 @@ public class GameManager : MonoBehaviour {
 
 	public void endGame(string winner) {
 		playing = false;
-		gameover = true;
 		Time.timeScale = 0.25f;
 		winnerTitle.text = winner + " Wins!";
+		slowMo = true;
+		theWinner = winner;
 	}
 
-	private void restart() {
+	public void restart() {
 		if (OnRestart != null) {
 			OnRestart ();
 		}
@@ -212,6 +234,9 @@ public class GameManager : MonoBehaviour {
 		newGame.canvasRenderer.SetAlpha (0);
 		gameover = false;
 		Time.timeScale = 1.0f;
+		slowMoTimer = 0.9f;
+		slowMo = false;
+		theWinner = "";
 		showOpeninigScreen ();
 	}
 }
