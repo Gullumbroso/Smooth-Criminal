@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour {
 	private bool showNewGame;
 
 	SpriteRenderer openingScreenSprite;
-	SpriteRenderer blackScreenSprite;
+	public SpriteRenderer blackScreenSprite;
 
 	bool starting;
 	bool fadingOut;

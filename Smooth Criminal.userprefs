@@ -1,14 +1,16 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/FlickeringLights.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Player.cs">
     <Files>
-      <File FileName="Assets/Scripts/MusicPlayer.cs" Line="28" Column="25" />
-      <File FileName="Assets/Scripts/Sounds.cs" Line="21" Column="3" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Player.cs" Line="98" Column="73" />
-      <File FileName="Assets/Scripts/Agent.cs" Line="108" Column="32" />
-      <File FileName="Assets/Scripts/PlayerAnimation.cs" Line="133" Column="19" />
-      <File FileName="Assets/Scripts/FlickeringLights.cs" Line="44" Column="23" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="161" Column="11" />
+      <File FileName="Assets/Scripts/MusicPlayer.cs" Line="157" Column="17" />
+      <File FileName="Assets/Scripts/Sounds.cs" Line="39" Column="18" />
+      <File FileName="Assets/Scripts/Player.cs" Line="246" Column="21" />
+      <File FileName="Assets/Scripts/Agent.cs" Line="56" Column="1" />
+      <File FileName="Assets/Scripts/PlayerAnimation.cs" Line="42" Column="26" />
+      <File FileName="Assets/Scripts/FlickeringLights.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/CountDown.cs" Line="47" Column="21" />
+      <File FileName="Assets/Scripts/KnifeFeedback.cs" Line="24" Column="38" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FlickeringLights : MonoBehaviour {
 
+	GameManager manager;
+
 	GameObject[] lights;
 	GameObject[] shades;
 	float alpha;
@@ -13,6 +15,7 @@ public class FlickeringLights : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		manager = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 		alpha = 1.0f;
 		flickerDown = true;
 		flickering = false;
@@ -71,11 +74,14 @@ public class FlickeringLights : MonoBehaviour {
 			color.a = Mathf.Clamp01(alpha);
 			go.GetComponent<SpriteRenderer> ().color = color;
 		}
+		var val = Mathf.Clamp01((alpha + 1.0f) / 2.0f * 1.1f);
 		foreach (GameObject go2 in shades) {
 			Color color = go2.GetComponent<SpriteRenderer> ().color;
-			float val = (alpha + 1.0f) / 2.0f * 1.1f;
-			color.a = Mathf.Clamp01(val);
+			color.a = val;
 			go2.GetComponent<SpriteRenderer> ().color = color;
 		}
+		Color c = manager.blackScreenSprite.color;
+		c.a = 1 - val;
+		manager.blackScreenSprite.color = c;
 	}
 }

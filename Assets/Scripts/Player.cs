@@ -9,6 +9,7 @@ public class Player : MonoBehaviour {
 
 	public GameManager manager;
 	private Sounds sounds;
+	private KnifeFeedback knifeFeeback;
 	private CircleCollider2D selfCollider;
 	public PlayerAnimation playerAnimation;
 	private int direction = 0; // 0-down, 1-left, 2-up, 3-right
@@ -36,6 +37,11 @@ public class Player : MonoBehaviour {
 
 	void Start () {
 		manager = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+		if (tag == PLAYER1_TAG) {
+			knifeFeeback = GameObject.Find ("Blue Knife").GetComponent<KnifeFeedback> ();
+		} else {
+			knifeFeeback = GameObject.Find ("Red Knife").GetComponent<KnifeFeedback> ();
+		}
 		sounds = GameObject.Find ("Sounds").GetComponent<Sounds> ();
 		selfCollider = GetComponent<CircleCollider2D> ();
 		playerAnimation = GetComponent<PlayerAnimation> ();
@@ -68,6 +74,7 @@ public class Player : MonoBehaviour {
 				if (cooldownTimer <= 0) {
 					// reload the stabbing ability
 					cooldown = false;
+					knifeFeeback.cooldownEnd ();
 					cooldownTimer = manager.postMurderCooldown;
 				}
 			}
@@ -204,8 +211,6 @@ public class Player : MonoBehaviour {
 //			curStabRadius = manager.stabbingRadius;
 //		}
 			
-		print (curStabRadius);
-
 		var pos = new Vector3 (selfCollider.transform.position.x, selfCollider.transform.position.y - 1.05f, 0);
 		Collider2D[] colliders = Physics2D.OverlapCircleAll(pos, curStabRadius);
 
@@ -238,6 +243,7 @@ public class Player : MonoBehaviour {
 					continue;
 				} else {
 					cooldown = true;
+					knifeFeeback.cooldownStart ();
 					agentScript.murdered ();
 					return;
 				}
