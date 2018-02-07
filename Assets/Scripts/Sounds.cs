@@ -42,6 +42,12 @@ public class Sounds : MonoBehaviour {
 		}
 	}
 
+	public void apex() {
+		if (!sounds [5].isPlaying) {
+			sounds [5].Play ();
+		}
+	}
+
 	public bool isAuwPlaying() {
 		return sounds [2].isPlaying;
 	}

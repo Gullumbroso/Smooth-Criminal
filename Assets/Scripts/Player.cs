@@ -110,6 +110,7 @@ public class Player : MonoBehaviour {
 			} else if (winDanceMoveTimer2 >= 0) {
 				winDanceMoveTimer2 -= Time.deltaTime;
 				if (!dancingAsWinner) {
+					sounds.apex ();
 					dance ();
 					dancingAsWinner = true;
 				}
