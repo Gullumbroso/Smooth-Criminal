@@ -10,6 +10,7 @@ public class MusicPlayer : MonoBehaviour {
 	private const int CHORUS_2_IDX = 3;
 	private const int CHORUS_3_IDX = 4;
 	private const int APEX_IDX = 5;
+	private const float VERSE_1_VERSE_2_DELAY = 0.65f;
 
 	public delegate void Apex ();
 	public static event Apex OnApexPrepare;
@@ -31,8 +32,9 @@ public class MusicPlayer : MonoBehaviour {
 
 	float prepareTime = 1.45f;
 
-	int lastLevelRandomFactor = 35;
+	int lastLevelRandomFactor = 60;
 
+	bool stopped;
 	bool playedFirstVerse;
 	bool apex;
 
@@ -55,9 +57,9 @@ public class MusicPlayer : MonoBehaviour {
 		versesCount = new int[verses.Length];
 		playedFirstVerse = false;
 		apex = false;
-		didApexCounter = 0;
+		stopped = false;
+		resetCounters ();
 		startMusic ();
-
 		if (debugMode) {
 			level = 3;
 			lastLevelRandomFactor = 85;
@@ -72,7 +74,7 @@ public class MusicPlayer : MonoBehaviour {
 				prepareForApex ();
 			}
 
-			if (!playedFirstVerse && !sounds.isAuwPlaying()) {
+			if (!playedFirstVerse && !sounds.isAuwPlaying ()) {
 				verses [curVerseIdx].Play ();
 				playedFirstVerse = true;
 			}
@@ -82,21 +84,31 @@ public class MusicPlayer : MonoBehaviour {
 			} else {
 				verseTimer -= Time.deltaTime;
 			}
+		
+		} else if (!manager.opening && !manager.starting) {
+			if (!stopped) {
+				stopMusic ();
+			}
 		}
 	}
 
 	void startMusic() {
 		curVerseIdx = selectNext();
 		nextVerseIdx = selectNext();
-		AudioSource house1 = verses [curVerseIdx];
-		verseTimer = house1.clip.length;
+		if (curVerseIdx == VERSE_1_IDX && nextVerseIdx == VERSE_2_IDX) {
+			// Add a tiny fraction of delay for a perefect transition between verse 1 and verse 2.
+			verseTimer = verses [curVerseIdx].clip.length + VERSE_1_VERSE_2_DELAY;
+		}
 	}
 
 	void resetMusicPlayer() {
-		print ("Reseting Music Player!");
+		Debug.Log ("Reseting Music Player!");
 		playedFirstVerse = false;
+		level = 0;
 		apex = false;
+		stopped = false;
 		resetCounters ();
+		startMusic ();
 	}
 
 	void nextVerse () {
@@ -121,10 +133,17 @@ public class MusicPlayer : MonoBehaviour {
 			}
 		}
 		verses [curVerseIdx].Play ();
-		verseTimer = verses [curVerseIdx].clip.length;
 
 		// Prepare the next verse
 		nextVerseIdx = selectNext ();
+		verseTimer = verses [curVerseIdx].clip.length;
+
+//		if (curVerseIdx == VERSE_1_IDX && nextVerseIdx == VERSE_2_IDX) {
+//			// Add a tiny fraction of delay for a perefect transition between verse 1 and verse 2.
+//			verseTimer = verses [curVerseIdx].clip.length + VERSE_1_VERSE_2_DELAY;
+//		} else {
+//			verseTimer = verses [curVerseIdx].clip.length;
+//		}
   	}
 
 	int selectNext() {
@@ -135,15 +154,15 @@ public class MusicPlayer : MonoBehaviour {
 
 		case 0:
 			print ("Level " + level);
-			while (versesCount [VERSE_1_IDX] < 2) {
+			while (versesCount [VERSE_1_IDX] < 1) {
 				versesCount [VERSE_1_IDX]++;
 				return VERSE_1_IDX;
 			}
-			while (versesCount [VERSE_2_IDX] < 2) {
+			while (versesCount [VERSE_2_IDX] < 1) {
 				versesCount [VERSE_2_IDX]++;
 				return VERSE_2_IDX;
 			}
-			while (versesCount [CHORUS_1_IDX] < 2) {
+			while (versesCount [CHORUS_1_IDX] < 1) {
 				versesCount [CHORUS_1_IDX]++;
 				return CHORUS_1_IDX;
 			}
@@ -155,7 +174,7 @@ public class MusicPlayer : MonoBehaviour {
 				versesCount [CHORUS_3_IDX]++;
 				return CHORUS_3_IDX;
 			}
-			while (versesCount [CHORUS_1_IDX] < 3) {
+			while (versesCount [CHORUS_1_IDX] < 2) {
 				versesCount [CHORUS_1_IDX]++;
 				return CHORUS_1_IDX;
 			}
@@ -165,11 +184,11 @@ public class MusicPlayer : MonoBehaviour {
 
 		case 1:
 			print ("Level " + level);
-			while (versesCount [VERSE_1_IDX] < 2) {
+			while (versesCount [VERSE_1_IDX] < 1) {
 				versesCount [VERSE_1_IDX]++;
 				return VERSE_1_IDX;
 			}
-			while (versesCount [CHORUS_1_IDX] < 2) {
+			while (versesCount [CHORUS_1_IDX] < 1) {
 				versesCount [CHORUS_1_IDX]++;
 				return CHORUS_1_IDX;
 			}
@@ -181,7 +200,7 @@ public class MusicPlayer : MonoBehaviour {
 				versesCount [CHORUS_3_IDX]++;
 				return CHORUS_3_IDX;
 			}
-			while (versesCount [CHORUS_1_IDX] < 3) {
+			while (versesCount [CHORUS_1_IDX] < 2) {
 				versesCount [CHORUS_1_IDX]++;
 				return CHORUS_1_IDX;
 			}
@@ -191,29 +210,29 @@ public class MusicPlayer : MonoBehaviour {
 
 		case 2:
 			print ("Level " + level);
-				while (versesCount [VERSE_1_IDX] < 2) {
+				while (versesCount [VERSE_1_IDX] < 1) {
 				versesCount [VERSE_1_IDX]++;
 				return VERSE_1_IDX;
 			}
 			if (didApexCounter < 1) {
 				didApexCounter++;
 				int lotto = Random.Range (0, 100);
-				if (lotto > 50) {
+				if (lotto > 40) {
 					return APEX_IDX;
 				}
 			} 
-			while (versesCount [VERSE_2_IDX] < 2) {
+			while (versesCount [VERSE_2_IDX] < 1) {
 				versesCount [VERSE_2_IDX]++;
 				return VERSE_2_IDX;
 			}
-			while (versesCount [CHORUS_1_IDX] < 2) {
+			while (versesCount [CHORUS_1_IDX] < 1) {
 				versesCount [CHORUS_1_IDX]++;
 				return CHORUS_1_IDX;
 			}
 			if (didApexCounter < 2) {
 				didApexCounter++;
 				int lotto = Random.Range (0, 100);
-				if (lotto > 50) {
+				if (lotto > 40) {
 					return APEX_IDX;
 				}
 			}
@@ -225,20 +244,20 @@ public class MusicPlayer : MonoBehaviour {
 				versesCount [CHORUS_3_IDX]++;
 				return CHORUS_3_IDX;
 			}
-			while (versesCount [CHORUS_1_IDX] < 3) {
+			while (versesCount [CHORUS_1_IDX] < 2) {
 				versesCount [CHORUS_1_IDX]++;
 				return CHORUS_1_IDX;
 			}
 			if (didApexCounter < 3) {
 				didApexCounter++;
 				int lotto = Random.Range (0, 100);
-				if (lotto > 50) {
+				if (lotto > 40) {
 					level++;
 					resetCounters ();
 					return APEX_IDX;
 				}
 			}
-			while (versesCount [CHORUS_1_IDX] < 4) {
+			while (versesCount [CHORUS_1_IDX] < 3) {
 				versesCount [CHORUS_1_IDX]++;
 				return CHORUS_1_IDX;
 			}
@@ -248,7 +267,7 @@ public class MusicPlayer : MonoBehaviour {
 
 		default:
 			print ("Level " + level);
-				while (versesCount [VERSE_1_IDX] < 2) {
+				while (versesCount [VERSE_1_IDX] < 1) {
 				versesCount [VERSE_1_IDX]++;
 				return VERSE_1_IDX;
 			}
@@ -259,7 +278,7 @@ public class MusicPlayer : MonoBehaviour {
 					return APEX_IDX;
 				}
 			}
-			while (versesCount [VERSE_2_IDX] < 2) {
+			while (versesCount [VERSE_2_IDX] < 1) {
 				versesCount [VERSE_2_IDX]++;
 				return VERSE_2_IDX;
 			}
@@ -270,7 +289,7 @@ public class MusicPlayer : MonoBehaviour {
 					return APEX_IDX;
 				}
 			}
-			while (versesCount [CHORUS_1_IDX] < 2) {
+			while (versesCount [CHORUS_1_IDX] < 1) {
 				versesCount [CHORUS_1_IDX]++;
 				return CHORUS_1_IDX;
 			}
@@ -289,7 +308,7 @@ public class MusicPlayer : MonoBehaviour {
 				versesCount [CHORUS_3_IDX]++;
 				return CHORUS_3_IDX;
 			}
-			while (versesCount [CHORUS_1_IDX] < 3) {
+			while (versesCount [CHORUS_1_IDX] < 2) {
 				versesCount [CHORUS_1_IDX]++;
 				return CHORUS_1_IDX;
 			}
@@ -300,7 +319,7 @@ public class MusicPlayer : MonoBehaviour {
 					return APEX_IDX;
 				}
 			}
-			while (versesCount [CHORUS_1_IDX] < 4) {
+			while (versesCount [CHORUS_1_IDX] < 3) {
 				versesCount [CHORUS_1_IDX]++;
 				return CHORUS_1_IDX;
 			}
@@ -323,6 +342,14 @@ public class MusicPlayer : MonoBehaviour {
 			OnApexPrepare ();
 		} else {
 			Debug.Log ("OnApexPrepare is null!");
+		}
+	}
+
+	public void stopMusic() {
+		if (!stopped) {
+			stopped = true;
+			verses [curVerseIdx].Stop ();
+			verses [6].Play ();
 		}
 	}
 }

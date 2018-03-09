@@ -109,7 +109,7 @@ MonoBehaviour:
   m_MinSize: {x: 683, y: 492}
   m_MaxSize: {x: 14004, y: 14042}
   vertical: 0
-  controlID: 282
+  controlID: 916
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -133,7 +133,7 @@ MonoBehaviour:
   m_MinSize: {x: 406, y: 492}
   m_MaxSize: {x: 10002, y: 14042}
   vertical: 1
-  controlID: 283
+  controlID: 777
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -157,7 +157,7 @@ MonoBehaviour:
   m_MinSize: {x: 406, y: 221}
   m_MaxSize: {x: 8006, y: 4021}
   vertical: 0
-  controlID: 233
+  controlID: 778
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -259,7 +259,7 @@ MonoBehaviour:
   m_MinSize: {x: 277, y: 292}
   m_MaxSize: {x: 4002, y: 8042}
   vertical: 1
-  controlID: 327
+  controlID: 917
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -333,8 +333,8 @@ MonoBehaviour:
   m_DepthBufferBits: 32
   m_Pos:
     serializedVersion: 2
-    x: 1028
-    y: 631
+    x: 2
+    y: 19
     width: 412
     height: 247
   m_MaximizeOnPlay: 1
@@ -414,14 +414,14 @@ MonoBehaviour:
     width: 820
     height: 513
   m_SceneLighting: 1
-  lastFramingTime: 1080.8996200561523
+  lastFramingTime: 9066.436664104462
   m_2DMode: 1
   m_isRotationLocked: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 0, y: 0, z: -100}
+    m_Target: {x: 0.7770952, y: 0.26271373, z: 2.6859045}
     speed: 2
-    m_Value: {x: 0, y: 0, z: -100}
+    m_Value: {x: 0.7770952, y: 0.26271373, z: 2.6859045}
   m_RenderMode: 0
   m_ValidateTrueMetals: 0
   m_SceneViewState:
@@ -448,9 +448,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 27.861338
+    m_Target: 24.692
     speed: 2
-    m_Value: 27.861338
+    m_Value: 24.692
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -507,8 +507,10 @@ MonoBehaviour:
     - {fileID: 1107458229532075414, guid: 79d8e6492304f490e9b1740eadcd1b00, type: 2}
     - {fileID: 1107218636836376758, guid: 28d211fa0d02343ffbe8f0837291bd5e, type: 2}
     - {fileID: 1107756838239543946, guid: 142d928468efc4c59982665b704e44d8, type: 2}
+    - {fileID: 1107541845989563952, guid: b2f5439ac950c4a089887445e92efa1a, type: 2}
+    - {fileID: 1107105423217090054, guid: bb6a9024d92554bbe8d985f796a0c41b, type: 2}
     m_ValueSerializationHelper:
-    - {x: 320.00006, y: 269.60004}
+    - {x: 444.00003, y: 439.80002}
     - {x: 442.00003, y: 274.60004}
     - {x: 442.00003, y: 286.60004}
     - {x: 442.00003, y: 274.60004}
@@ -526,6 +528,8 @@ MonoBehaviour:
     - {x: 444.00003, y: 274.60004}
     - {x: 442.00003, y: 232.59949}
     - {x: 442.00003, y: 284.60004}
+    - {x: 442.00003, y: 274.60004}
+    - {x: 442.00003, y: 266.60004}
   m_PreviewAnimator: {fileID: 0}
   m_AnimatorController: {fileID: 0}
   m_BreadCrumbs: []
@@ -596,9 +600,9 @@ MonoBehaviour:
     height: 513
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 4c060000
+    m_SelectedIDs: 6e060000
     m_LastClickedID: 0
-    m_ExpandedIDs: e2f7ffff9af8ffff68f9ffffe6fbffff00000000
+    m_ExpandedIDs: e6fbffff00000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -667,10 +671,10 @@ MonoBehaviour:
   m_LastProjectPath: /Users/gullumbroso/UnityProjects/Smooth Criminal
   m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 171}
-    m_SelectedIDs: 60250000
-    m_LastClickedID: 9568
-    m_ExpandedIDs: 00000000da2400000a260000ec26000028280000ffffff7f
+    scrollPos: {x: 0, y: 0}
+    m_SelectedIDs: 6a250000
+    m_LastClickedID: 9578
+    m_ExpandedIDs: 00000000dc2400001e27000066270000ffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -698,7 +702,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000da2400000a260000ec26000028280000ffffff7f
+    m_ExpandedIDs: 00000000dc2400001e27000066270000ffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -725,8 +729,8 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 1
-    m_ExpandedInstanceIDs: c6230000242a00006e1f01005a1f01000e1f0100362101001a2301000000000042260000
+    m_HadKeyboardFocusLastEvent: 0
+    m_ExpandedInstanceIDs: c6230000242a00006e1f01005a1f01000e1f0100362101001a23010000000000422600000c2600004a2900006c250000ded80000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -742,7 +746,7 @@ MonoBehaviour:
       m_IsRenaming: 0
       m_OriginalEventType: 11
       m_IsRenamingFilename: 1
-      m_ClientGUIView: {fileID: 0}
+      m_ClientGUIView: {fileID: 10}
     m_CreateAssetUtility:
       m_EndAction: {fileID: 0}
       m_InstanceID: 0

@@ -48,6 +48,12 @@ public class Sounds : MonoBehaviour {
 		}
 	}
 
+	public void winningDrums() {
+		if (!sounds [6].isPlaying) {
+			sounds [6].Play ();
+		}
+	}
+
 	public bool isAuwPlaying() {
 		return sounds [2].isPlaying;
 	}

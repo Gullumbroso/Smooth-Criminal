@@ -49,13 +49,14 @@ public class GameManager : MonoBehaviour {
 
 	public bool opening;
 	public bool playing;
+	public bool starting;
 
-	float slowMoTimer;
+	float slowMoTimer = 0.47f;
 	bool slowMo;
 
-	public Text winnerTitle;
+	float startBlinkTimer;
 
-	public Text newGame;
+	public Text pressAnyKeyToStart;
 	private bool showNewGame;
 
 	SpriteRenderer openingScreenSprite;
@@ -63,9 +64,7 @@ public class GameManager : MonoBehaviour {
 
 	string theWinner;
 
-	bool starting;
 	bool fadingOut;
-	bool fadingIn;
 	bool isCountdownFinished;
 
 	Color transparent;
@@ -79,8 +78,7 @@ public class GameManager : MonoBehaviour {
 		countDown = GameObject.Find("CountDown").GetComponent<CountDown> ();
 		transparent = new Color (1.0f, 1.0f, 1.0f, 0);
 		nonTransparent = new Color (1.0f, 1.0f, 1.0f, 1.0f);
-		winnerTitle.canvasRenderer.SetAlpha (0);
-		newGame.canvasRenderer.SetAlpha (0);
+		pressAnyKeyToStart.canvasRenderer.SetAlpha (0);
 		gameover = false;
 		gameoverTimer = gameoverLength;
 		slowMoTimer = 0.9f;
@@ -94,12 +92,14 @@ public class GameManager : MonoBehaviour {
 		starting = false;
 		openingScreenSprite.color = nonTransparent;
 		blackScreenSprite.color = transparent;
+		pressAnyKeyToStart.canvasRenderer.SetAlpha (1);
 		themeSong.Play ();
 	}
 
 	void hideOpeningScreen() {
 		opening = false;
 		openingScreenSprite.color = transparent;
+		pressAnyKeyToStart.canvasRenderer.SetAlpha (0);
 	}
 
 	void startNewGame() {
@@ -107,6 +107,7 @@ public class GameManager : MonoBehaviour {
 		starting = true;
 		fadingOut = true;
 		isCountdownFinished = false;
+
 		spawnAgents ();
 	}
 
@@ -134,11 +135,16 @@ public class GameManager : MonoBehaviour {
 		}
 
 		if (opening) {
+			startBlinkTimer -= Time.deltaTime;
+			if (startBlinkTimer < 0) {
+				startBlinkTimer = 0.47f;
+				blinkStart ();
+			}
 			if (Input.anyKey) {
 				startNewGame ();
 			}
 		} else {
-			// Playing
+			blinkStop ();
 		}
 
 		if (gameover) {
@@ -151,14 +157,14 @@ public class GameManager : MonoBehaviour {
 
 		if (slowMo) {
 			slowMoTimer -= Time.deltaTime;
-			if (slowMoTimer < 0) {
+			if (slowMoTimer < 0) { 
 				Time.timeScale = 1.0f;
 				if (theWinner == "Player 1") {
 					player1.winningAnimation ();
 				} else if (theWinner == "Player 2") {
 					player2.winningAnimation ();
 				} else {
-					print ("There is a problem!");
+					Debug.Log ("There is a problem!");
 				}
 			}
 		}
@@ -177,8 +183,6 @@ public class GameManager : MonoBehaviour {
 		if (blackScreenSprite.color.a > 0) {
 			var alpha = blackScreenSprite.color.a;
 			blackScreenSprite.color = new Color (1, 1, 1, alpha - blackFadeStep * Time.deltaTime);
-		} else {
-			fadingIn = false;
 		}
 	}
 
@@ -195,7 +199,6 @@ public class GameManager : MonoBehaviour {
 
 	public void countdownFinished() {
 		isCountdownFinished = true;
-		fadingIn = true;
 	}
 
 	void spawnAgents() {
@@ -217,7 +220,6 @@ public class GameManager : MonoBehaviour {
 	public void endGame(string winner) {
 		playing = false;
 		Time.timeScale = 0.25f;
-		winnerTitle.text = winner + " Wins!";
 		slowMo = true;
 		theWinner = winner;
 	}
@@ -230,13 +232,24 @@ public class GameManager : MonoBehaviour {
 		foreach(GameObject obj in agents) {
 			Destroy(obj);
 		}
-		winnerTitle.canvasRenderer.SetAlpha (0);
-		newGame.canvasRenderer.SetAlpha (0);
+		pressAnyKeyToStart.canvasRenderer.SetAlpha (0);
 		gameover = false;
 		Time.timeScale = 1.0f;
 		slowMoTimer = 0.9f;
 		slowMo = false;
 		theWinner = "";
 		showOpeninigScreen ();
+	}
+
+	void blinkStart() {
+		if (pressAnyKeyToStart.canvasRenderer.GetAlpha () == 0) {
+			pressAnyKeyToStart.canvasRenderer.SetAlpha (1);
+		} else {
+			pressAnyKeyToStart.canvasRenderer.SetAlpha (0);
+		}
+	}
+
+	void blinkStop() {
+			pressAnyKeyToStart.canvasRenderer.SetAlpha (0);
 	}
 }

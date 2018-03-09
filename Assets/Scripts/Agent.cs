@@ -23,6 +23,7 @@ public class Agent : MonoBehaviour {
 	GameManager manager;
 	Sounds sounds;
 	PlayerAnimation playerAnimation;
+	CircleCollider2D col2d;
 	float velUnit;
 
 	private bool alive;
@@ -50,18 +51,20 @@ public class Agent : MonoBehaviour {
 		manager = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 		sounds = GameObject.Find ("Sounds").GetComponent<Sounds> ();
 		playerAnimation = GetComponent<PlayerAnimation> ();
+		col2d = GetComponent<CircleCollider2D> ();
 		velUnit = manager.velUnit;
-		auwTimer = manager.danceLength;
-		alive = true;
-		dancing = false;
-		playerAnimation.moveDown ();
+		resetAgent ();
 	}
 
-	void resetAgent() {
+	public void resetAgent() {
 		auwTimer = manager.danceLength;
 		alive = true;
 		dancing = false;
+		col2d.enabled = true;
 		playerAnimation.moveDown ();
+		auwTimer = manager.danceLength;
+		playerAnimation.reset ();
+		GetComponent<SpriteRenderer> ().sortingOrder = 0;
 	}
 
 	// Update is called once per frame
@@ -73,10 +76,8 @@ public class Agent : MonoBehaviour {
 				makeMove ();
 			} else {
 				auwTimer -= Time.deltaTime;
-				if (auwTimer <= 1.3 && auwTimer >= 1.2) {
+				if (auwTimer <= 1.3f && auwTimer >= 1.2f) {
 					sounds.auwPlural ();
-				} else if (auwTimer <= 0) {
-					auwTimer = manager.danceLength;
 				}
 			}
 
@@ -93,7 +94,9 @@ public class Agent : MonoBehaviour {
 				currentMove = move;
 			}
 		} else if (!manager.playing) {
-			playerAnimation.moveDown ();
+			if (alive) {
+				playerAnimation.stand ();
+			}
 		}
 	}
 		
@@ -157,7 +160,15 @@ public class Agent : MonoBehaviour {
 
 	void OnCollisionEnter2D (Collision2D collision) {
 		int lotto = Random.Range (0, 100);
-		if (lotto > 30) {
+		int threshold;
+		if (collision.gameObject.tag == "Walls") {
+			// Collided with a wall - change direction most of the times
+			threshold = 10;
+		} else {
+			// Collided with another agent or player - change directions every second time
+			threshold = 50;
+		}
+		if (lotto > threshold) {
 			moveTimer = 0;
 		}
 	}
@@ -167,8 +178,7 @@ public class Agent : MonoBehaviour {
 		sounds.stabbed ();
 		playerAnimation.murdered ();
 		GetComponent<SpriteRenderer> ().sortingOrder = -1;
-		var collider = GetComponent<CircleCollider2D> ();
-		Destroy (collider);
+		col2d.enabled = false;
 	}
 
 	void dance() {	
@@ -180,6 +190,7 @@ public class Agent : MonoBehaviour {
 
 	void stopDance() {
 		dancing = false;
+		auwTimer = manager.danceLength;
 		playerAnimation.stopDance();
 	}
 }

@@ -50,8 +50,12 @@ public class PlayerAnimation : MonoBehaviour {
 
 	public void reset() {
 		alive = true;
-		movingDown = true;
 		dancing = false;
+		movingUp = false;
+		movingDown = true;
+		movingRight = false;
+		movingLeft = false;
+		standing = false;
 	}
 	
 	// Update is called once per frame

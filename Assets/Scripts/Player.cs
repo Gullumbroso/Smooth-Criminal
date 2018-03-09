@@ -20,11 +20,14 @@ public class Player : MonoBehaviour {
 	private bool dancing = false;
 	private bool dancingOnCue = false;
 	private bool preparing = false;
+	private bool playedWinningDrums = false;
 
 	private bool winDanceMove;
 	private bool dancingAsWinner;
 	private float winDanceMoveTimer1;
 	private float winDanceMoveTimer2;
+
+	PlayerWins playerWin;
 
 
 	void OnEnable() {
@@ -45,8 +48,10 @@ public class Player : MonoBehaviour {
 		manager = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 		if (tag == PLAYER1_TAG) {
 			knifeFeeback = GameObject.Find ("Blue Knife").GetComponent<KnifeFeedback> ();
+			playerWin = GameObject.Find ("Player 1 Wins").GetComponent<PlayerWins> ();
 		} else {
 			knifeFeeback = GameObject.Find ("Red Knife").GetComponent<KnifeFeedback> ();
+			playerWin = GameObject.Find ("Player 2 Wins").GetComponent<PlayerWins> ();
 		}
 		sounds = GameObject.Find ("Sounds").GetComponent<Sounds> ();
 		selfCollider = GetComponent<CircleCollider2D> ();
@@ -58,17 +63,19 @@ public class Player : MonoBehaviour {
 		winDanceMoveTimer1 = 1.5f;
 		winDanceMoveTimer2 = 4.0f;
 		dancingAsWinner = false;
+		playedWinningDrums = false;
 	}
 
 	void resetPlayer() {
-		print ("Reset Player " + tag + " !");
 		cooldownTimer = manager.postMurderCooldown;
 		winDanceMove = false;
 		winDanceMoveTimer1 = 1.5f;
 		winDanceMoveTimer2 = 4.0f;
 		dancingAsWinner = false;
+		playerWin.reset ();
 		playerAnimation.reset ();
 		placeInScreen ();
+		playedWinningDrums = false;
 	}
 	
 	// Update is called once per frame
@@ -78,7 +85,7 @@ public class Player : MonoBehaviour {
 
 			if (!dancing && !dancingOnCue) {
 				getInput ();
-			} else {
+			} else if (dancing) {
 				dancingTimer -= Time.deltaTime;
 				if (dancingTimer <= 1.4 && dancingTimer >= 1.3) {
 					sounds.auw ();
@@ -102,6 +109,10 @@ public class Player : MonoBehaviour {
 		
 		} else if (winDanceMove) {
 			winDanceMoveTimer1 -= Time.deltaTime;
+			if (!playedWinningDrums) {
+				playedWinningDrums = true;
+				sounds.winningDrums ();
+			}
 			if (winDanceMoveTimer1 >= 0) {
 				var pos = new Vector3 (transform.position.x - velUnit * Time.deltaTime, transform.position.y, 0);
 				transform.position = manager.depthSim (pos);
@@ -115,8 +126,7 @@ public class Player : MonoBehaviour {
 					dancingAsWinner = true;
 				}
 			} else {
-				print ("Restart!");
-				manager.restart ();
+				playerWin.setWin ();
 			}
 		}
 	}
@@ -266,6 +276,7 @@ public class Player : MonoBehaviour {
 			} else if (tag == PLAYER1_TAG && agent.name == "Player2") {
 				print ("Player 1 WINS!");
 				var playerAnimationScript = agent.GetComponent<PlayerAnimation>();
+				sounds.stabbed ();
 				playerAnimationScript.murdered ();
 				manager.endGame ("Player 1");
 				return;
@@ -273,6 +284,7 @@ public class Player : MonoBehaviour {
 			} else if (tag == PLAYER2_TAG && agent.name == "Player1") {
 				print ("Player 2 WINS!");
 				var playerAnimationScript = agent.GetComponent<PlayerAnimation>();
+				sounds.stabbed ();
 				playerAnimationScript.murdered ();
 				manager.endGame ("Player 2");
 				return;
