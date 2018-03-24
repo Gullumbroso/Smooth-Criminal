@@ -35,6 +35,10 @@ public class KnifeFeedback : MonoBehaviour {
 		animator.SetBool(cooldownBoolAnimParamId, cooldown);
 	}
 
+	public void cooldownReset() {
+		cooldown = false;
+	}
+
 	public void cooldownStart() {
 		cooldown = true;
 	}

@@ -67,7 +67,9 @@ public class Player : MonoBehaviour {
 	}
 
 	void resetPlayer() {
+		cooldown = false;
 		cooldownTimer = manager.postMurderCooldown;
+		knifeFeeback.cooldownReset ();
 		winDanceMove = false;
 		winDanceMoveTimer1 = 1.5f;
 		winDanceMoveTimer2 = 4.0f;
